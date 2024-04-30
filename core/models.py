@@ -49,10 +49,19 @@ class Purchase_Order(BaseModel):
     acknowledgment_date = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
-        return f"PO - {self.pk} - {self.get_status_display()}"
+        return f"Purchase_Order - {self.pk} - {self.get_status_display()}"
     
     
     
 
 
 class Historical_Performance(BaseModel):
+    vendor = models.ForeignKey(Vender,on_delete=models.CASCADE)
+    date = models.DateField()
+    on_time_delivery_rate = models.FloatField()
+    quality_rating_avg = models.FloatField()
+    average_response_time = models.FloatField()
+    fulfillment_rate = models.FloatField()
+    
+    def __str__(self):
+        return f"Historical_Performance of {self.vendor} on {self.date}"
