@@ -25,4 +25,34 @@ class Vender(BaseModel):
     )
 
     def __str__(self):
-        return f"Vender #{self.pk}"
+        return f"Vender - {self.pk}"
+    
+    
+    
+    
+    
+class Purchase_Order(BaseModel):
+    status_choices = [
+    ('pending', 'Pending'),
+    ('completed', 'Completed'),
+    ('canceled', 'Canceled'),
+    ]
+    po_number = models.CharField(max_length=50, unique=True)
+    vendor = models.ForeignKey(Vender,on_delete=models.CASCADE)
+    order_date = models.DateTimeField()
+    delivery_date = models.DateField()
+    items = models.JSONField()
+    quantity = models.IntegerField(null=False)
+    status = models.CharField(max_length=20, choices=status_choices)
+    quality_rating = models.FloatField(null=True, blank=True)
+    issue_date = models.DateTimeField(auto_now_add=True)
+    acknowledgment_date = models.DateTimeField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"PO - {self.pk} - {self.get_status_display()}"
+    
+    
+    
+
+
+class Historical_Performance(BaseModel):
