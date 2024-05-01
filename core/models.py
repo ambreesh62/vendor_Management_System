@@ -1,5 +1,6 @@
 from django.db import models
 from base.models import BaseModel
+from django.utils import timezone
 
 # Create your models here.
 
@@ -47,6 +48,11 @@ class Purchase_Order(BaseModel):
     quality_rating = models.FloatField(null=True, blank=True)
     issue_date = models.DateTimeField(auto_now_add=True)
     acknowledgment_date = models.DateTimeField(null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.acknowledgment_date:
+            self.acknowledgment_date = timezone.now()
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"Purchase_Order - {self.pk} - {self.get_status_display()}"
