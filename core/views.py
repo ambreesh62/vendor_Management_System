@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from core.models import Vender, Purchase_Order, Historical_Performance
-from core.serializers import VanderSerializer, Purchase_OrderSerializer, Historical_Performance
+from core.models import Vendor, Purchase_Order, Historical_Performance
+from core.serializers import VandorSerializer, Purchase_OrderSerializer, Historical_PerformanceSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,7 +12,7 @@ from rest_framework import status
 
 class VenderAPIView(APIView):
     def post(self, request):
-        serializer = VanderSerializer(data=request.data)
+        serializer = VandorSerializer(data=request.data)
         if not serializer.is_valid():
             print(serializer.errors)
             return Response({'errors' : serializer.errors, 'massage' : 'somthing went worng'}, status=status.HTTP_400_BAD_REQUEST)
@@ -23,20 +23,20 @@ class VenderAPIView(APIView):
     def get(self, request, pk=None):
         
         if pk:
-            vender_objs = Vender.objects.get(id=pk)
-            serializer = VanderSerializer(vender_objs)
+            vender_objs = Vendor.objects.get(id=pk)
+            serializer = VandorSerializer(vender_objs)
             return Response({'massage': 'success', 'data': serializer.data}, status=status.HTTP_202_ACCEPTED)
         
-        vender_objs = Vender.objects.all()
-        serializer = VanderSerializer(vender_objs, many=True)
+        vender_objs = Vendor.objects.all()
+        serializer = VandorSerializer(vender_objs, many=True)
         return Response({'playload' : serializer.data}, status=status.HTTP_200_OK)
     
     def put(self, request, pk=None):
         
         try:
             
-            vender_objs = Vender.objects.get(pk=pk)
-            serializer = VanderSerializer(vender_objs, data=request.data)
+            vender_objs = Vendor.objects.get(pk=pk)
+            serializer = VandorSerializer(vender_objs, data=request.data)
             
             if not serializer.is_valid():
                 print(serializer.errors)
@@ -44,16 +44,16 @@ class VenderAPIView(APIView):
             serializer.save()
             return Response({'playload' : serializer.data,}, status=status.HTTP_202_ACCEPTED)
 
-        except Vender.DoesNotExist:
+        except Vendor.DoesNotExist:
             return Response({'massage' : 'DoesNotExist'}, status=status.HTTP_400_BAD_REQUEST)
         
     def delete(self, request, pk=None):
         
         try:
-            vender_objs = Vender.objects.get(pk=pk)
+            vender_objs = Vendor.objects.get(pk=pk)
             vender_objs.delete()
             return Response({'massage' : 'Data has been deleted'})
-        except Vender.DoesNotExist:
+        except Vendor.DoesNotExist:
             return Response({'massage' : 'DoesNotExist'}, status=status.HTTP_400_BAD_REQUEST)    
 
 
@@ -101,3 +101,20 @@ class Purchase_OrderAPIView(APIView):
             return Response({'massage' : 'Data has been deleted'}, status=status.HTTP_200_OK)
         except Purchase_Order.DoesNotExist:
             return Response({'massage' : 'DoesNotExist'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+#Retrieve a vendor's performance metrics. APIViews here.
+
+class Historical_PerformanceAPIView(APIView):
+       def get(self, request, vendor_id):
+        try:
+            vendor = Vendor.objects.get(pk=vendor_id)
+        except Vendor.DoesNotExist:
+            return Response("Vendor not found", status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            performance = Historical_Performance.objects.get(vendor=vendor)
+            serializer = Historical_PerformanceSerializer(performance)
+            return Response(serializer.data)
+        except Historical_Performance.DoesNotExist:
+            return Response("Performance data not found", status=status.HTTP_404_NOT_FOUND)

@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from core.models import Vender, Purchase_Order, Historical_Performance
+from core.models import Vendor, Purchase_Order, Historical_Performance
 from django.contrib.auth.models import User
 
-class VanderSerializer(serializers.ModelSerializer):
+class VandorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Vender
+        model = Vendor
         fields = '__all__'
         
         

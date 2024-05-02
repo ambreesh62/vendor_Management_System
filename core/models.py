@@ -4,7 +4,7 @@ from django.utils import timezone
 
 # Create your models here.
 
-class Vender(BaseModel):
+class Vendor(BaseModel):
     name = models.CharField(("Vendor's name"), max_length=50)
     contact_details = models.TextField(("Contact information of the vendor"))
     vendor_code = models.CharField(max_length=50, unique=True)
@@ -26,7 +26,7 @@ class Vender(BaseModel):
     )
 
     def __str__(self):
-        return f"Vender - {self.pk}"
+        return f"Vendor - {self.pk}"
     
     
     
@@ -39,7 +39,7 @@ class Purchase_Order(BaseModel):
     ('canceled', 'Canceled'),
     ]
     po_number = models.CharField(max_length=50, unique=True)
-    vendor = models.ForeignKey(Vender,on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
     order_date = models.DateTimeField()
     delivery_date = models.DateField()
     items = models.JSONField()
@@ -62,7 +62,7 @@ class Purchase_Order(BaseModel):
 
 
 class Historical_Performance(BaseModel):
-    vendor = models.ForeignKey(Vender,on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
     date = models.DateField()
     on_time_delivery_rate = models.FloatField()
     quality_rating_avg = models.FloatField()
