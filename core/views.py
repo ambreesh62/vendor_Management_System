@@ -106,7 +106,7 @@ class Purchase_OrderAPIView(APIView):
 #Retrieve a vendor's performance metrics. APIViews here.
 
 class Historical_PerformanceAPIView(APIView):
-       def get(self, request, vendor_id):
+    def get(self, request, vendor_id):
         try:
             vendor = Vendor.objects.get(pk=vendor_id)
         except Vendor.DoesNotExist:
@@ -118,3 +118,21 @@ class Historical_PerformanceAPIView(APIView):
             return Response(serializer.data)
         except Historical_Performance.DoesNotExist:
             return Response("Performance data not found", status=status.HTTP_404_NOT_FOUND)
+    
+    
+    
+    def post(self, request, vendor_id):
+        try:
+            vendor = Vendor.objects.get(pk=vendor_id)
+        except Vendor.DoesNotExist:
+            return Response("Vendor not found",status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        data['vendor'] = vendor_id 
+
+        serializer = Historical_PerformanceSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()  
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                  
